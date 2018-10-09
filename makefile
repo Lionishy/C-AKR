@@ -2,6 +2,9 @@ SRC_FILES = $(wildcard ./src/*.c)
 MAIN_DIR = ./main
 C_FLAGS = -std=c11 -O3
 
+cavity-test:
+	gcc $(MAIN_DIR)/cavity_test.c $(SRC_FILES) -I ./inc -o ./bin/cavtest.exe $(C_FLAGS)
+
 founder:
 	gcc $(MAIN_DIR)/founder.main.c $(SRC_FILES) -I ./inc -o ./bin/founder.exe $(C_FLAGS)
 
