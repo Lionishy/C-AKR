@@ -26,18 +26,18 @@ int main() {
     VectorH V0  = {0.05,0.12247449};
 
     //параметры окружающей плазмы
-    /*dipole_physical_environment_context_t physical_environment_cntx = {
+    dipole_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1.0, .omega_pc0 = 0.1
         , .phi_width = 0.23, .L_width = 0.005
         , .source_density_coeff = 0.2 
-    };*/
+    };
 
-    homogeneous_physical_environment_context_t physical_environment_cntx = {
+    /*homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
         , .cold_density = 0.01, .source_density = 0.99
-    };
+    };*/
 
     //контекс для дисперсионного уравнения
     /*epsilon_context_t dispersion_relation_cntx = {
@@ -51,9 +51,11 @@ int main() {
     double * points = NULL; unsigned count = 0;
 
     omega_correctorH_context_t corrector_cntx = {
-          1.e-9, 1.e-9, 1.e-14, 1000u
+          1.e-9, 1.e-9, 1.e-12, 1000u
         , warm_dispersion_relationH, &dispersion_relation_cntx
     };
+
+    VectorSp R = {1.959273, 0.447126, 0.004595};
 
     points = calloc(4000000u, 2*sizeof(double));
 
@@ -65,7 +67,7 @@ int main() {
         for (double w = 0.; w < 1.5; w += 5.e-3) {
             double w_vec[2] = {w,0.};
             VectorH Kh = {K.pl*k,K.pr*k};
-            if (omega_correctorH(&corrector_cntx,&R0,&Kh,w_vec)) {
+            if (omega_correctorH(&corrector_cntx,&R,&Kh,w_vec)) {
                 if (w_vec[0] > 0 && !linear_search(k,w_vec[0],points,count,1.e-4)) {
                     fprintf(fd,"%.8f %.8f %.8f\n",k,w_vec[0],hypot(Kh.pl,Kh.pr)/w_vec[0]);
                     points[2*count] = k; points[2*count+1] = w_vec[0];
