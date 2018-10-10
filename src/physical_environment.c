@@ -12,7 +12,7 @@ PhysicalEnvironment dipole_physical_environment(void const * ptr, VectorSp R) {
     double L = acos(sin(R.th)*sqrt(1./R.r)), L0 = acos(sin(cntx->R0.th)*sqrt(1./cntx->R0.r));
     //double cavity = exp( -(L-L0)*(L-L0)/(cntx->L_width*cntx->L_width) -(R.phi-cntx->R0.phi)*(R.phi-cntx->R0.phi)/(cntx->phi_width*cntx->phi_width) );
 
-    double rightL = L0+0.01, leftL = L0-0.01, dL = 0.001;
+    double rightL = L0+0.005, leftL = L0-0.005, dL = 0.0008;
     double cavity = -0.5*(tanh((L-rightL)/dL) + tanh((leftL-L)/dL));
     double 
         density_c = cntx->R0.r*cntx->R0.r/(R.r*R.r)*(1.-cavity),

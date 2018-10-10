@@ -97,7 +97,7 @@ int main(int argc, char **args) {
 
     fprintf(gain_trj,"t dt r th phi q L Kr Kth Kphi Kq KL gamma S Vr Vth Vphi VKr VKth VKphi d_cold d_source N\n");
     {
-        VectorSp VR, VK; double dt = 2.5e-5, g = w_vec[1];
+        VectorSp VR, VK; double dt = 0.5e-5, g = w_vec[1];
 
         //корректор k-параллельного и инкремента контекст
         gamma_kpr_correctorSp_context_t gain_corrector_cntx = {
@@ -113,7 +113,7 @@ int main(int argc, char **args) {
             , gamma_kpr_correctorSp, &gain_corrector_cntx
         };
 
-        
+        unsigned counter = 0;        
         while(w_vec[1] > 1.e-4) {
             
             step_status_t status = predictor_step(&predictor_step_cntx, &R,  &K, w_vec, &VR, &VK, dt);
@@ -128,14 +128,16 @@ int main(int argc, char **args) {
             
             double hmod = hypot(H.r,H.th);
             VectorSp He = {H.r/hmod,H.th/hmod}, Hp = {H.th/hmod,-H.r/hmod};
-
-            fprintf(gain_trj,"%f %f ", t, dt);
-            fprintf(gain_trj,"%f %f %f %f %f ", R.r, R.th, R.phi, 0.5*sqr(1./R.r)*cos(R.th), R.r/sqr(sin(R.th)));
-            fprintf(gain_trj,"%f %f %f %f %f ", K.r, K.th, K.phi, projection_of_on(K,He).pl, projection_of_on(K,Hp).pl);
-            fprintf(gain_trj,"%f %f ", w_vec[1], S);
-            fprintf(gain_trj,"%f %f %f %f %f %f ", VR.r ,VR.th, VR.phi, VK.r, VK.th, VK.phi);
-            fprintf(gain_trj,"%f %f %f ", phys_env.density_c, phys_env.density_s, sqrt(vecsp_norm(K))/w_vec[0]);
-            fprintf(gain_trj,"\n");
+            if (0 == ++counter%100) {
+                fprintf(gain_trj,"%f %f ", t, dt);
+                fprintf(gain_trj,"%f %f %f %f %f ", R.r, R.th, R.phi, 0.5*sqr(1./R.r)*cos(R.th), R.r/sqr(sin(R.th)));
+                fprintf(gain_trj,"%f %f %f %f %f ", K.r, K.th, K.phi, projection_of_on(K,He).pl, projection_of_on(K,Hp).pl);
+                fprintf(gain_trj,"%f %f ", w_vec[1], S);
+                fprintf(gain_trj,"%f %f %f %f %f %f ", VR.r ,VR.th, VR.phi, VK.r, VK.th, VK.phi);
+                fprintf(gain_trj,"%f %f %f ", phys_env.density_c, phys_env.density_s, sqrt(vecsp_norm(K))/w_vec[0]);
+                fprintf(gain_trj,"\n");
+                counter = 0;
+            }
 
             if (sqrt(vecsp_norm(K))/w_vec[0] >= 1. ) {
                 printf("N > 1\n"); fflush(stdout);
@@ -156,7 +158,7 @@ int main(int argc, char **args) {
 
     fprintf(stable_trj,"t dt r th phi q L Kr Kth Kphi Kq KL gamma S Vr Vth Vphi VKr VKth VKphi d_cold d_source N\n");
     {
-        VectorSp VR, VK; double dt = 0.5e-5; w_vec[1] = 0.;
+        VectorSp VR, VK; double dt = 0.1e-5; w_vec[1] = 0.;
 
         N_context_t n_dispersion_relation_cntx = {
               dipole_physical_environment, &physical_environment_cntx
@@ -186,12 +188,26 @@ int main(int argc, char **args) {
             , cold_dispersion_relationSp, &dispersion_relation_cntx
             , kpl_correctorSp, &cold_corrector_cntx     
         };
+
+        kpl_correctorSp_context_t warm_corrector_cntx = {
+              dipole_physical_environment, &physical_environment_cntx
+            , 1.e-9, 1.e-12, 1000u
+            , warm_dispersion_relationH, &dispersion_relation_cntx
+        };
+
+        predictor_step_context_t warm_predictor_step_cntx = {
+            (VectorSp){1.e-6,1.e-6,1.e-6}, (VectorSp){1.e-6,1.e-6,1.e-6}, 1.e-6
+            , warm_dispersion_relationSp, &dispersion_relation_cntx
+            , kpl_correctorSp, &warm_corrector_cntx
+        };
         
+        unsigned counter = 0;
         bool proceed = true;
         while (t < 1. && proceed)
         {
-            step_status_t status = predictor_step(&n_predictor_step_cntx, &R,  &K, w_vec, &VR, &VK, dt);
-            
+            //step_status_t status = predictor_step(&n_predictor_step_cntx, &R,  &K, w_vec, &VR, &VK, dt);
+            step_status_t status = predictor_step(&warm_predictor_step_cntx, &R,  &K, w_vec, &VR, &VK, dt);
+
             t += dt;  printf("%f %d %f\n", t, status, w_vec[1]);
             if (STP_OK != status) { printf("ERROR"); return 0; }
 
@@ -200,16 +216,19 @@ int main(int argc, char **args) {
             
             double hmod = hypot(H.r,H.th);
             VectorSp He = {H.r/hmod,H.th/hmod}, Hp = {H.th/hmod,-H.r/hmod};
+            
+            if (0 == ++counter%200) {
+                fprintf(stable_trj,"%f %f ", t, dt);
+                fprintf(stable_trj,"%f %f %f %f %f ", R.r, R.th, R.phi, 0.5*sqr(1./R.r)*cos(R.th), R.r/sqr(sin(R.th)));
+                fprintf(stable_trj,"%f %f %f %f %f ", K.r, K.th, K.phi, projection_of_on(K,He).pl, projection_of_on(K,Hp).pl);
+                fprintf(stable_trj,"%f %f ", w_vec[1], S);
+                fprintf(stable_trj,"%f %f %f %f %f %f ", VR.r ,VR.th, VR.phi, VK.r, VK.th, VK.phi);
+                fprintf(stable_trj,"%f %f %f ", phys_env.density_c, phys_env.density_s, sqrt(vecsp_norm(K))/w_vec[0]);
+                fprintf(stable_trj,"\n");
+                counter = 0;
+            }
 
-            fprintf(stable_trj,"%f %f ", t, dt);
-            fprintf(stable_trj,"%f %f %f %f %f ", R.r, R.th, R.phi, 0.5*sqr(1./R.r)*cos(R.th), R.r/sqr(sin(R.th)));
-            fprintf(stable_trj,"%f %f %f %f %f ", K.r, K.th, K.phi, projection_of_on(K,He).pl, projection_of_on(K,Hp).pl);
-            fprintf(stable_trj,"%f %f ", w_vec[1], S);
-            fprintf(stable_trj,"%f %f %f %f %f %f ", VR.r ,VR.th, VR.phi, VK.r, VK.th, VK.phi);
-            fprintf(stable_trj,"%f %f %f ", phys_env.density_c, phys_env.density_s, sqrt(vecsp_norm(K))/w_vec[0]);
-            fprintf(stable_trj,"\n");
-
-            {
+            /*{
                 VectorSp K_cold = K;
                 if (kpl_correctorSp(&cold_corrector_cntx,&R,&K_cold,w_vec) && fabs(K.r-K_cold.r) < 5.e-4) {
                     printf("K     = %f %f %f\n",K.r,K.th,K.phi);
@@ -225,7 +244,7 @@ int main(int argc, char **args) {
                         }
                     }
                 }
-            }
+            }*/
         }
 
         //dt = 2.5e-5;
