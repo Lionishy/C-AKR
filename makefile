@@ -5,6 +5,9 @@ C_FLAGS = -std=c11 -O3
 cavity-test:
 	gcc $(MAIN_DIR)/cavity_test.c $(SRC_FILES) -I ./inc -o ./bin/cavtest.exe $(C_FLAGS)
 
+new-mapper:
+	gcc $(MAIN_DIR)/new.mapper.main.c $(SRC_FILES) -I ./inc -o ./bin/new-mapper.exe $(C_FLAGS)
+
 founder:
 	gcc $(MAIN_DIR)/founder.main.c $(SRC_FILES) -I ./inc -o ./bin/founder.exe $(C_FLAGS)
 
