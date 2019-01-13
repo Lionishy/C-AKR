@@ -22,7 +22,8 @@ int main() {
         , .cold_density = 0.001, .source_density = 1.0
     };
 
-    
+
+    double prevSolve[2] = {0.,0.}; 
     char name[] = "./new_map_branch_";
     char ext[] = ".txt";
     int branch_counter = 0;
@@ -55,16 +56,27 @@ int main() {
                     printf("Can't open file...");
                     return 0;
                 }
+
+                if (res < 1. && prevSolve[1] < 0.) {
+                    double wMid = prevSolve[0] - prevSolve[1]*(w-prevSolve[0])/(res-prevSolve[1]);
+                    fprintf(map_file,"%f %f %f\n",wMid,0,0);
+                }
+
                 st = WRITE;
             }
             fprintf(map_file,"%f %f %f\n",w,sqrt(res),sqrt(res)*w);
         } else {
             if (WRITE == st) {
+                if (prevSolve[1] < 1.) {
+                    double wMid = prevSolve[0] - prevSolve[1]*(w-prevSolve[0])/(res-prevSolve[1]);
+                    fprintf(map_file,"%f %f %f\n",wMid,0,0);
+                }                
+
                 fclose(map_file);
                 st = WAIT;
             }
         }
-            
+        prevSolve[0] = w; prevSolve[1] = res;   
     }
 
     END: {
