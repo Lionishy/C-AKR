@@ -66,8 +66,8 @@ double complex warm_dispersion_relation(PhysicalEnvironment env, VectorH K, doub
     double complex n_pl = K.pl/w, n_pr = K.pr/w; 
     struct epsilon eps_c = cold_epsilon(env,K,w), eps_s = source_epsilon(env,K,w);
     double complex eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2;
-    return ((eps1-n_pl*n_pl)/eps1 - n_pr*n_pr)*((eps1*eps1-eps2*eps2)/eps1 - n_pl*n_pl - n_pr*n_pr) - n_pl*n_pl*eps2/eps1*eps2/eps1;
-    //return ((eps1*eps1-eps2*eps2)/eps1 - n_pr*n_pr);
+    //return ((eps1-n_pl*n_pl)/eps1 - n_pr*n_pr)*((eps1*eps1-eps2*eps2)/eps1 - n_pl*n_pl - n_pr*n_pr) - n_pl*n_pl*eps2/eps1*eps2/eps1;
+    return ((eps1*eps1-eps2*eps2)/eps1 - n_pr*n_pr);
 }
 
 static inline 

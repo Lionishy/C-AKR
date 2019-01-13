@@ -11,7 +11,8 @@
 int main() {
     //ФИЗИЧЕСКАЯ МОДЕЛЬ
     VectorSp R0 = {1.975,0.44928364,0.}; //точка нормировки
-    VectorH V0  = {0.05,0.12247449};
+    //VectorH V0  = {0.05,0.12247449};
+    VectorH V0 = {0.,0.1};
 
     //параметры окружающей плазмы
     /*dipole_physical_environment_context_t physical_environment_cntx = {
@@ -24,7 +25,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.01, .source_density = 0.99
+        , .cold_density = 0., .source_density = 1.
     };
 
     //контекс для дисперсионного уравнения
@@ -37,18 +38,18 @@ int main() {
 
 
     omega_correctorH_context_t corrector_cntx = {
-          1.e-8, 1.e-8, 1.e-12, 1000u
+          1.e-9, 1.e-9, 1.e-10, 1000u
         , warm_dispersion_relationH, &dispersion_relation_cntx
     };
 
     //start point
     unsigned counter = 0;
     VectorSp R = R0;
-    VectorH K = {1.,1.}; double kmod = hypot(K.pl,K.pr); K.pl /= kmod; K.pr /= kmod; 
-    double w_vec[2] = {1.03580441,0.}; double n_start = 1.2; // 1.03580441
+    VectorH K = {0.,1.}; double kmod = hypot(K.pl,K.pr); K.pl /= kmod; K.pr /= kmod; 
+    double w_vec[2] = {0.99670355, 0.00373355}; double n_start = 2.0; //0.9999998776 0.49751865e-2
 
     FILE *fd = fopen("./gain.branch.txt","w");
-    for (double n = n_start; n > 0.1; n -= 1.e-7) {
+    for (double n = n_start; n > 0.; n -= 1.e-6) {
         VectorH Kh = (VectorH){K.pl*n, K.pr*n};
         if (omega_correctorH(&corrector_cntx,&R0,&Kh,w_vec)) {
             w_vec[1] = w_vec[1] < 0. ? -w_vec[1] : w_vec[1];

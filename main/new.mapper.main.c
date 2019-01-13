@@ -16,13 +16,14 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.999, .source_density = 0.001
+        , .cold_density = 0.05, .source_density = 0.99
     };
 
     FILE *map_file_up = fopen("./new_map_up1.txt","w");
     FILE *map_file_dn = fopen("./new_map_dn1.txt","w");
-    double dw = 0.00001;
+    double dw = 1.e-6;
 
+    unsigned counter = 0;
     for (double w = 2.0; w > 0.; w -= dw) {
         VectorH K = {0.,0.};
         double res = warm_left_dispersion_relation(
@@ -31,8 +32,10 @@ int main() {
             , w
             );
 
-        if (res > 0.)
-            fprintf(map_file_up,"%f %f %f\n",w,sqrt(res),sqrt(res)*w);
+        if (res > 0.) {
+            if(0 == (++counter)%10)
+                fprintf(map_file_up,"%f %f %f\n",w,sqrt(res),sqrt(res)*w);
+        }
         else
             printf("Negative %f %f\n",w,res);
     }
