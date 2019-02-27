@@ -34,7 +34,7 @@ int main() {
 
     for (double w = 2.0; w > 0.; w -= dw) {
         VectorH K = {0.,0.};
-        double res = warm_left_dispersion_relation(
+        double res = warm_minus_Npr(
             homogeneous_physical_environment(&physical_environment_cntx,R0)
             , K
             , w
