@@ -13,7 +13,7 @@ enum WriteState {WAIT,WRITE};
 int main() {
     //ФИЗИЧЕСКАЯ МОДЕЛЬ
     VectorSp R0 = {1.975,0.44928364,0.}; //точка нормировки
-    VectorH V0  = {0.0,0.05};
+    VectorH V0  = {0.0,0.1};
 
     //параметры окружающей плазмы
     homogeneous_physical_environment_context_t physical_environment_cntx = {
