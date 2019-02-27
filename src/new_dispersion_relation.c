@@ -47,11 +47,21 @@ struct epsilon cold_epsilon(PhysicalEnvironment env, VectorH K, double w) {
  * Asking for a real frequency (omega)
  * And returning a squared refractive index (Npr*Npr)
 */
-double warm_left_dispersion_relation(PhysicalEnvironment env, VectorH K, double w) {
+double warm_plus_Npr(PhysicalEnvironment env, VectorH K, double w) {
+    double n_pl = K.pl/w, n_pr = K.pr/w; 
     struct epsilon eps_c = cold_epsilon(env,K,w), eps_s = source_epsilon(env,K,w);
-    double complex 
-        eps1 = 1. + eps_c.eps1 + eps_s.eps1,
-        eps2 = eps_c.eps2 + eps_s.eps2;
-
-    return (eps1*eps1-eps2*eps2)/eps1;
+    double eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2; 
+    double alpha = (eps1 - n_pl*n_pl)/eps1;
+    double betta = (eps1*eps1 - eps2*eps2)/eps1 - n_pl*n_pl;
+    return (alpha+betta)*0.5 + sqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*eps2/eps1)*(n_pl*eps2/eps1))*0.5;
 }
+
+double warm_minus_Npr(PhysicalEnvironment env, VectorH K, double w) {
+    double n_pl = K.pl/w, n_pr = K.pr/w; 
+    struct epsilon eps_c = cold_epsilon(env,K,w), eps_s = source_epsilon(env,K,w);
+    double eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2; 
+    double alpha = (eps1 - n_pl*n_pl)/eps1;
+    double betta = (eps1*eps1 - eps2*eps2)/eps1 - n_pl*n_pl;
+    return (alpha+betta)*0.5 - sqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*eps2/eps1)*(n_pl*eps2/eps1))*0.5;
+}
+
