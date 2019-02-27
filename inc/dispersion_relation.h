@@ -23,6 +23,10 @@ void source_dispersion_relationH(void const *cntx, VectorSp R, VectorH K, double
 void warm_dispersion_relationSp(void const *cntx, VectorSp R, VectorSp K, double const *w_vec, double *res_vec);
 void warm_dispersion_relationH(void const *cntx, VectorSp R, VectorH K, double const *w_vec, double *res_vec);
 
+void warm_dispersion_relation_plusSp(void const *cntx, VectorSp R, VectorSp K, double const *w_vec, double *res_vec);
+void warm_dispersion_relation_plusH(void const *cntx, VectorSp R, VectorH K, double const *w_vec, double *res_vec);
+void warm_dispersion_relation_minusSp(void const *cntx, VectorSp R, VectorSp K, double const *w_vec, double *res_vec);
+void warm_dispersion_relation_minusH(void const *cntx, VectorSp R, VectorH K, double const *w_vec, double *res_vec);
 
 typedef struct _N_context {
     phys_env_t phys_env;

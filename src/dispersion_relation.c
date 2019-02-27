@@ -66,9 +66,29 @@ double complex warm_dispersion_relation(PhysicalEnvironment env, VectorH K, doub
     double complex n_pl = K.pl/w, n_pr = K.pr/w; 
     struct epsilon eps_c = cold_epsilon(env,K,w), eps_s = source_epsilon(env,K,w);
     double complex eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2;
-    //return ((eps1-n_pl*n_pl)/eps1 - n_pr*n_pr)*((eps1*eps1-eps2*eps2)/eps1 - n_pl*n_pl - n_pr*n_pr) - n_pl*n_pl*eps2/eps1*eps2/eps1;
-    return ((eps1*eps1-eps2*eps2)/eps1 - n_pr*n_pr);
+    return ((eps1-n_pl*n_pl)/eps1 - n_pr*n_pr)*((eps1*eps1-eps2*eps2)/eps1 - n_pl*n_pl - n_pr*n_pr) - n_pl*n_pl*eps2/eps1*eps2/eps1;
 }
+
+static inline
+double complex warm_dispersion_relation_plus(PhysicalEnvironment env, VectorH K, double complex w) {
+    double complex n_pl = K.pl/w, n_pr = K.pr/w; 
+    struct epsilon eps_c = cold_epsilon(env,K,w), eps_s = source_epsilon(env,K,w);
+    double complex eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2; 
+    double complex alpha = (eps1 - n_pl*n_pl)/eps1;
+    double complex betta = (eps1*eps1 - eps2*eps2)/eps1 - n_pl*n_pl;
+    return (alpha+betta)*0.5 + csqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*n_pl*eps2/eps1*eps2/eps1))*0.5;
+}
+
+static inline
+double complex warm_dispersion_relation_minus(PhysicalEnvironment env, VectorH K, double complex w) {
+    double complex n_pl = K.pl/w, n_pr = K.pr/w; 
+    struct epsilon eps_c = cold_epsilon(env,K,w), eps_s = source_epsilon(env,K,w);
+    double complex eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2; 
+    double complex alpha = (eps1 - n_pl*n_pl)/eps1;
+    double complex betta = (eps1*eps1 - eps2*eps2)/eps1 - n_pl*n_pl;
+    return (alpha+betta)*0.5 - csqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*n_pl*eps2/eps1*eps2/eps1))*0.5;
+}
+
 
 static inline 
 double N_dispersion_relation(double n, VectorH K, double const * w_vec) {
@@ -127,6 +147,37 @@ void warm_dispersion_relationSp(void const *ptr, VectorSp R, VectorSp K, double 
     res_vec[0] = creal(res); res_vec[1] = cimag(res);
 }
 
+void warm_dispersion_relation_plusH(void const *ptr, VectorSp R, VectorH K, double const * w_vec, double * res_vec) {
+    epsilon_context_t const *cntx = ptr;
+    PhysicalEnvironment phys_env = cntx->phys_env(cntx->phys_env_cntx,R);
+    double complex w = w_vec[0] + I*w_vec[1];
+    double complex res = warm_dispersion_relation_plus(phys_env,K,w);
+    res_vec[0] = creal(res); res_vec[1] = cimag(res);
+}
+
+void warm_dispersion_relation_plusSp(void const *ptr, VectorSp R, VectorSp K, double const * w_vec, double * res_vec) {
+    epsilon_context_t const *cntx = ptr;
+    PhysicalEnvironment phys_env = cntx->phys_env(cntx->phys_env_cntx,R);
+    double complex w = w_vec[0] + I*w_vec[1];
+    double complex res = warm_dispersion_relation_plus(phys_env,projection_of_on(K,phys_env.H),w);
+    res_vec[0] = creal(res); res_vec[1] = cimag(res);
+}
+
+void warm_dispersion_relation_minusH(void const *ptr, VectorSp R, VectorH K, double const * w_vec, double * res_vec) {
+    epsilon_context_t const *cntx = ptr;
+    PhysicalEnvironment phys_env = cntx->phys_env(cntx->phys_env_cntx,R);
+    double complex w = w_vec[0] + I*w_vec[1];
+    double complex res = warm_dispersion_relation_minus(phys_env,K,w);
+    res_vec[0] = creal(res); res_vec[1] = cimag(res);
+}
+
+void warm_dispersion_relation_minusSp(void const *ptr, VectorSp R, VectorSp K, double const * w_vec, double * res_vec) {
+    epsilon_context_t const *cntx = ptr;
+    PhysicalEnvironment phys_env = cntx->phys_env(cntx->phys_env_cntx,R);
+    double complex w = w_vec[0] + I*w_vec[1];
+    double complex res = warm_dispersion_relation_minus(phys_env,projection_of_on(K,phys_env.H),w);
+    res_vec[0] = creal(res); res_vec[1] = cimag(res);
+}
 
 void N_dispersion_relationH(void const *ptr, VectorSp R, VectorH K, double const * w_vec, double * res_vec) {
     N_context_t const *cntx = ptr;
