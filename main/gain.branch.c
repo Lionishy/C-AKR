@@ -39,7 +39,7 @@ int main() {
 
     omega_correctorH_context_t corrector_cntx = {
           1.e-9, 1.e-9, 1.e-10, 1000u
-        , warm_dispersion_relationH, &dispersion_relation_cntx
+        , warm_dispersion_relation_minusH, &dispersion_relation_cntx
     };
 
     //start point
@@ -58,7 +58,7 @@ int main() {
                 printf("%.8f %.8f %.8f\n",n,w_vec[0],w_vec[1]);
                 return 0;
             }
-            if (0 == (counter %= 50))fprintf(fd,"%.8f %.8f %.8f %.8f\n",n,w_vec[0],w_vec[1],hypot(Kh.pl,Kh.pr)/w_vec[0]); 
+            if (0 == (counter %= 100))fprintf(fd,"%.8f %.8f %.8f %.8f\n",w_vec[0],hypot(Kh.pl,Kh.pr)/w_vec[0],hypot(Kh.pl,Kh.pr),w_vec[1]); 
             ++counter;
         }
         else {
@@ -66,22 +66,6 @@ int main() {
             return 0;
         }
     }
-
-    /*for (double n = n_start; n < 1.0; n += 1.e-5) {
-        VectorH Kh = (VectorH){K.pl*n, K.pr*n};
-        if (omega_correctorH(&corrector_cntx,&R0,&Kh,w_vec)) {
-            if (w_vec[0] < 0.) {
-                printf("Negative omega\n");
-                printf("%.8f %.8f %.8f\n",n,w_vec[0],w_vec[1]);
-                return 0;
-            }
-            fprintf(fd,"%.8f %.8f %.8f %.8f\n",n,w_vec[0],w_vec[1],n/w_vec[0]); 
-        }
-        else {
-            printf("Error\n");
-            return 0;
-        }
-    }*/
 
     fclose(fd);
 

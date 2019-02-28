@@ -44,10 +44,10 @@ int main() {
      *               *
      *               *  //gamma_start
      * ***************/
-    struct w_gamma_domain domain = {0.98,1.0,0.,0.004,1.e-4,1.e-4};
+    struct w_gamma_domain domain = {0.95,1.05,0.,0.004,1.e-4,1.e-4};
     omega_correctorH_context_t omega_correctorH_cntx = {
           1.e-9,1.e-9,1.e-12,1000u
-        , warm_dispersion_relationH, &dispersion_relation_cntx
+        , warm_dispersion_relation_minusH, &dispersion_relation_cntx
     };
 
     VectorSp R = R0;
@@ -59,9 +59,9 @@ int main() {
     for (double w=domain.w_start; w < domain.w_stop && !found; w += domain.w_step) {
         for (double g=domain.gamma_start; g < domain.gamma_stop && !found; g += domain.gamma_step) {
             double w_vec[2] = {w,g};
-            if( omega_correctorH(&omega_correctorH_cntx,&R,&K,w_vec) && w_vec[0] < 1. ) { //&& fabs(w_vec[1]) > 1.e-6) {
+            if( omega_correctorH(&omega_correctorH_cntx,&R,&K,w_vec) && fabs(w_vec[1]) > 1.e-6) {
                 printf("%.8f %.8f %.8f, %.8f\n",w,g,w_vec[0],w_vec[1]); fflush(stdout);
-                //found = true;
+                found = true;
             }    
         }
     }

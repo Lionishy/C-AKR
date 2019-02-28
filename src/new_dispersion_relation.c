@@ -53,7 +53,8 @@ double warm_plus_Npr(PhysicalEnvironment env, VectorH K, double w) {
     double eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2; 
     double alpha = (eps1 - n_pl*n_pl)/eps1;
     double betta = (eps1*eps1 - eps2*eps2)/eps1 - n_pl*n_pl;
-    return (alpha+betta)*0.5 + sqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*eps2/eps1)*(n_pl*eps2/eps1))*0.5;
+    double gamma = alpha-betta;
+    return (alpha+betta)*0.5 + sqrt(gamma*gamma + 4.0*(n_pl*eps2/eps1)*(n_pl*eps2/eps1))*0.5*(gamma > 0 ? 1. : -1.);
 }
 
 double warm_minus_Npr(PhysicalEnvironment env, VectorH K, double w) {
@@ -62,6 +63,7 @@ double warm_minus_Npr(PhysicalEnvironment env, VectorH K, double w) {
     double eps1 = 1. + eps_c.eps1 + eps_s.eps1, eps2 = eps_c.eps2 + eps_s.eps2; 
     double alpha = (eps1 - n_pl*n_pl)/eps1;
     double betta = (eps1*eps1 - eps2*eps2)/eps1 - n_pl*n_pl;
-    return (alpha+betta)*0.5 - sqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*eps2/eps1)*(n_pl*eps2/eps1))*0.5;
+    double gamma = alpha-betta;
+    return (alpha+betta)*0.5 + sqrt((alpha-betta)*(alpha-betta) + 4.0*(n_pl*eps2/eps1)*(n_pl*eps2/eps1))*0.5*(gamma > 0 ? -1. : 1.);
 }
 

@@ -19,7 +19,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.001, .source_density = 1.0
+        , .cold_density = 0.0, .source_density = 1.0
     };
 
 
