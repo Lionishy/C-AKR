@@ -13,7 +13,7 @@ enum WriteState {WAIT,WRITE};
 int main() {
     //ФИЗИЧЕСКАЯ МОДЕЛЬ
     VectorSp R0 = {1.975,0.44928364,0.}; //точка нормировки
-    VectorH V0  = {0.0,0.1};
+    VectorH V0  = {0.1,0.1};
 
     //параметры окружающей плазмы
     homogeneous_physical_environment_context_t physical_environment_cntx = {
@@ -33,7 +33,7 @@ int main() {
     double dw = 0.00001;
 
     for (double w = 2.0; w > 0.; w -= dw) {
-        VectorH K = {0.,0.};
+        VectorH K = {-0.4,0.};
         double res = warm_minus_Npr(
             homogeneous_physical_environment(&physical_environment_cntx,R0)
             , K
