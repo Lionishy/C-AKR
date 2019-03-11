@@ -15,7 +15,7 @@ int main() {
     /* Initial conditions */
     VectorSp R0 = {1.975,0.44928364,0.};
     //VectorH V0  = {0.05,0.12247449};
-    VectorH V0 = {0.1,0.1};
+    VectorH V0 = {0.0,0.1};
 
     /*dipole_physical_environment_context_t physical_env_cntx = {
           .R0 = R0, .V0 = V0
@@ -44,16 +44,17 @@ int main() {
      *               *
      *               *  //gamma_start
      * ***************/
-    struct w_gamma_domain domain = {1.02,1.08,0.,0.004,1.e-4,1.e-4};
+    struct w_gamma_domain domain = {0.99,1.01,0.,0.006,1.e-4,1.e-4};
     omega_correctorH_context_t omega_correctorH_cntx = {
           1.e-9,1.e-9,1.e-12,1000u
         , warm_dispersion_relation_minusH, &dispersion_relation_cntx
     };
 
     VectorSp R = R0;
-    VectorH K = {0.525,hypot(0.0,1.0)}; double n = 0.0;
-    //double mod = hypot(K.pl,K.pr); K.pl /= mod; K.pr /= mod;
-    K.pr *= n;
+    double angle = 3.14159265358979323846/12.;
+    VectorH K = {sin(angle),cos(angle)}; double n = 1.8;
+    double mod = hypot(K.pl,K.pr); K.pl /= mod; K.pr /= mod;
+    K.pr *= n; K.pl *= n;
 
     bool found = false;
     for (double w=domain.w_start; w < domain.w_stop && !found; w += domain.w_step) {

@@ -12,7 +12,7 @@ int main() {
     //ФИЗИЧЕСКАЯ МОДЕЛЬ
     VectorSp R0 = {1.975,0.44928364,0.}; //точка нормировки
     //VectorH V0  = {0.05,0.12247449};
-    VectorH V0 = {0.1,0.1};
+    VectorH V0 = {0.,0.1};
 
     //параметры окружающей плазмы
     /*dipole_physical_environment_context_t physical_environment_cntx = {
@@ -38,20 +38,20 @@ int main() {
 
 
     omega_correctorH_context_t corrector_cntx = {
-          1.e-9, 1.e-9, 1.e-10, 1000u
+          1.e-9, 1.e-9, 1.e-12, 1000u
         , warm_dispersion_relation_minusH, &dispersion_relation_cntx
     };
 
     //start point
     unsigned counter = 0;
     VectorSp R = R0;
-    VectorH K = {0.,1.}; double kmod = hypot(K.pl,K.pr); K.pl /= kmod; K.pr /= kmod; 
-    double w_vec[2] = {1.04851862, 0.00318999}; double n_start = 0.0; //0.9999998776 0.49751865e-2
+    double angle = 3.14159265358979323846/12.;
+    VectorH K = {sin(angle),cos(angle)}; double kmod = hypot(K.pl,K.pr); K.pl /= kmod; K.pr /= kmod; 
+    double w_vec[2] = {0.99618190, 0.00277757}; double n_start = 1.8; //0.9999998776 0.49751865e-2
 
-    K.pl = 0.525;
     FILE *fd = fopen("./gain.branch.txt","w");
-    for (double n = n_start; n < 2.0; n += 1.e-6) {
-        VectorH Kh = (VectorH){K.pl, K.pr*n};
+    for (double n = n_start; n > 0.0; n -= 1.e-6) {
+        VectorH Kh = (VectorH){K.pl*n, K.pr*n};
         if (omega_correctorH(&corrector_cntx,&R0,&Kh,w_vec)) {
             w_vec[1] = w_vec[1] < 0. ? -w_vec[1] : w_vec[1];
             if (w_vec[0] < 0.) {
@@ -59,7 +59,7 @@ int main() {
                 printf("%.8f %.8f %.8f\n",n,w_vec[0],w_vec[1]);
                 return 0;
             }
-            if (0 == (counter %= 100))fprintf(fd,"%.8f %.8f %.8f %.8f\n",w_vec[0],hypot(Kh.pl,Kh.pr)/w_vec[0],Kh.pr,w_vec[1]); 
+            if (0 == (counter %= 100))fprintf(fd,"%.8f %.8f %.8f %.8f\n",w_vec[0],hypot(Kh.pl,Kh.pr)/w_vec[0],hypot(Kh.pl,Kh.pr),w_vec[1]); 
             ++counter;
         }
         else {
