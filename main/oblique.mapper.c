@@ -27,7 +27,7 @@ enum WriteState {WAIT,WRITE};
 int main() {
     //ФИЗИЧЕСКАЯ МОДЕЛЬ
     VectorSp R0 = {1.975,0.44928364,0.}; //точка нормировки
-    VectorH V0  = {0.,0.1};
+    VectorH V0  = {0.05,0.1};
 
     //параметры окружающей плазмы
     homogeneous_physical_environment_context_t physical_environment_cntx = {
@@ -42,7 +42,7 @@ int main() {
     };
 
 
-    double angle = 3.14159265358979323846/2./90.*35;
+    double angle = 3.14159265358979323846/6.;
     //контекст для действительной функции от модуля К
     oblique_real_K_cntx_t oblique_cntx = {
         2.0, sin(angle), cos(angle)
@@ -57,7 +57,7 @@ int main() {
     }
 
     unsigned count = 0; double K1 = 0.001, K2 = 2.0, w1 = 0.001, w2 = 2.0;
-    double K = K1;
+    double K = K1; //K = 0.9388;
     for (double w = w1; w < 2.; w += 1.e-6) {
         double res = -1; unsigned iterations;
         
@@ -65,7 +65,7 @@ int main() {
         IterativeSolverStatus status =  secant_solver(
             oblique_real_K, &oblique_cntx
             , K
-            , 1.0e-8, 1.0e-10, 1000
+            , 1.0e-7, 1.0e-9, 1000
             , &res, &iterations
         );
 
