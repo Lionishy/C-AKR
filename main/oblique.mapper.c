@@ -33,7 +33,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.0, .source_density = 1.0
+        , .cold_density = 0.001, .source_density = 1.0
     };
 
     //контекст для дисперсионного уравнения
@@ -72,7 +72,7 @@ int main() {
         if (SLV_OK == status) {
             K = res;
             if (0 == (count++%50)) {
-                fprintf(fd,"%d %f %f\n",status,w,K);     
+                fprintf(fd,"%f %f %f\n",w,K/w,K);     
                 count = 1;
             }
         }
