@@ -25,7 +25,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0., .source_density = 1.
+        , .cold_density = 0.001, .source_density = 1.
     };
 
     //контекс для дисперсионного уравнения
@@ -38,7 +38,7 @@ int main() {
 
 
     omega_correctorH_context_t corrector_cntx = {
-          1.e-9, 1.e-9, 1.e-10, 1000u
+          1.e-9, 1.e-9, 1.e-11, 1000u
         , warm_dispersion_relation_minusH, &dispersion_relation_cntx
     };
 
@@ -47,7 +47,7 @@ int main() {
     VectorSp R = R0;
     double angle = 3.14159265358979323846/6.;
     VectorH K = {sin(angle),cos(angle)}; double kmod = hypot(K.pl,K.pr); K.pl /= kmod; K.pr /= kmod; 
-    double w_vec[2] = { 0.99876, 0.00498}; double n_start = 0; //0.99875607, 0.00497512
+    double w_vec[2] = {0.99995, 0.}; double n_start = 1.15798; //0.99875607, 0.00497512
 
     FILE *fd = fopen("./gain.branch.txt","w");
     for (double n = n_start; n < 2.0; n += 1.e-6) {
