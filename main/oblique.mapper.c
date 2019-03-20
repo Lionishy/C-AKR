@@ -33,7 +33,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.001, .source_density = 1.0
+        , .cold_density = 0.064, .source_density = 1.0
     };
 
     //контекст для дисперсионного уравнения
@@ -42,10 +42,10 @@ int main() {
     };
 
 
-    double angle = 3.14159265358979323846/6.;
+    double angle = 3.14159265358979323846/3.;
     //контекст для действительной функции от модуля К
     oblique_real_K_cntx_t oblique_cntx = {
-        2.0, sin(angle), cos(angle)
+        2.0, -sin(angle), cos(angle)
         , R0
         , &dispersion_relation_cntx
     };    
@@ -57,8 +57,8 @@ int main() {
     }
 
     unsigned count = 0; double K1 = 0.001, K2 = 2.0, w1 = 0.001, w2 = 2.0;
-    double K = K1; //K = 0.9388;
-    for (double w = w1; w < 2.; w += 1.e-6) {
+    double K = K1;
+    for (double w = w1; w < 2.0; w += 1.e-6) {
         double res = -1; unsigned iterations;
         
         oblique_cntx.w = w;
@@ -71,10 +71,11 @@ int main() {
 
         if (SLV_OK == status) {
             K = res;
-            if (0 == (count++%50)) {
+            if (0 == (count++%50) && K >= 0.) {
                 fprintf(fd,"%f %f %f\n",w,K/w,K);     
                 count = 1;
             }
+            K *= K < 0 ? -1. : 1.;
         }
     } 
 

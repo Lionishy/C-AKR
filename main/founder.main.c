@@ -27,7 +27,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.001, .source_density = 1.
+        , .cold_density = 0.064, .source_density = 1.
     };
 
     /*epsilon_context_t dispersion_relation_cntx = {
@@ -44,7 +44,7 @@ int main() {
      *               *
      *               *  //gamma_start
      * ***************/
-    struct w_gamma_domain domain = {0.999,1.001,0.,0.006,1.e-5,1.e-4};
+    struct w_gamma_domain domain = {0.9,0.925,0.,0.006,1.e-5,1.e-4};
     omega_correctorH_context_t omega_correctorH_cntx = {
           1.e-9,1.e-9,1.e-12,1000u
         , warm_dispersion_relation_minusH, &dispersion_relation_cntx
@@ -52,7 +52,7 @@ int main() {
 
     VectorSp R = R0;
     double angle = 3.14159265358979323846/3.;
-    VectorH K = {sin(angle),cos(angle)}; double n = 0.95;
+    VectorH K = {-sin(angle),cos(angle)}; double n = 1.8;
     double mod = hypot(K.pl,K.pr); K.pl /= mod; K.pr /= mod;
     K.pr *= n; K.pl *= n;
 
@@ -60,9 +60,9 @@ int main() {
     for (double w=domain.w_start; w < domain.w_stop && !found; w += domain.w_step) {
         for (double g=domain.gamma_start; g < domain.gamma_stop && !found; g += domain.gamma_step) {
             double w_vec[2] = {w,g};
-            if( omega_correctorH(&omega_correctorH_cntx,&R,&K,w_vec) && fabs(w_vec[0]) >= domain.w_start && fabs(w_vec[0]) <= domain.w_stop) {// && fabs(w_vec[1]) < 1.e-6) {
+            if( omega_correctorH(&omega_correctorH_cntx,&R,&K,w_vec) && fabs(w_vec[0]) >= domain.w_start && fabs(w_vec[0]) <= domain.w_stop && fabs(w_vec[1]) > 1.e-6) {
                 printf("%.8f %.8f %.8f, %.8f\n",w,g,w_vec[0],w_vec[1]); fflush(stdout);
-                //found = true;
+                found = true;
             }    
         }
     }
