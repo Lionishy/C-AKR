@@ -12,7 +12,7 @@ int main() {
     //ФИЗИЧЕСКАЯ МОДЕЛЬ
     VectorSp R0 = {1.975,0.44928364,0.}; //точка нормировки
     //VectorH V0  = {0.05,0.12247449};
-    VectorH V0 = {0.05,0.1};
+    VectorH V0 = {0.0,0.15};
 
     //параметры окружающей плазмы
     /*dipole_physical_environment_context_t physical_environment_cntx = {
@@ -25,7 +25,7 @@ int main() {
     homogeneous_physical_environment_context_t physical_environment_cntx = {
           .R0 = R0, .V0 = V0
         , .omega_cc0 = 1., .omega_pc0 = 0.1
-        , .cold_density = 0.064, .source_density = 1.
+        , .cold_density = 0.1, .source_density = 1.0
     };
 
     //контекс для дисперсионного уравнения
@@ -46,24 +46,24 @@ int main() {
     unsigned counter = 0;
     VectorSp R = R0;
     double angle = 3.14159265358979323846/3.;
-    VectorH K = {-sin(angle),cos(angle)}; double kmod = hypot(K.pl,K.pr); K.pl /= kmod; K.pr /= kmod; 
-    double w_vec[2] = {0.91472833, 0.00387489}; double n_start = 1.8; //0.99875607, 0.00497512
+    VectorH K = {0.0, 1.0}; 
+    double w_vec[2] = {0.99023517, 0.00541397}; double Kpl_start = 1.8; //0.99875607, 0.00497512
 
     FILE *fd = fopen("./gain.branch.txt","w");
-    for (double n = n_start; n > 1.0; n -= 1.e-6) {
-        VectorH Kh = (VectorH){K.pl*n, K.pr*n};
+    for (double Kpl = Kpl_start; Kpl > 1.; Kpl -= 1.e-6) {
+        VectorH Kh = (VectorH){K.pl, Kpl};
         if (omega_correctorH(&corrector_cntx,&R0,&Kh,w_vec)) {
             w_vec[1] = w_vec[1] < 0. ? -w_vec[1] : w_vec[1];
             if (w_vec[0] < 0.) {
                 printf("Negative omega\n");
-                printf("%.8f %.8f %.8f\n",n,w_vec[0],w_vec[1]);
+                printf("%.8f %.8f %.8f\n",Kpl,w_vec[0],w_vec[1]);
                 return 0;
             }
-            if (0 == (counter %= 100))fprintf(fd,"%.8f %.8f %.8f %.8f\n",w_vec[0],hypot(Kh.pl,Kh.pr)/w_vec[0],hypot(Kh.pl,Kh.pr),w_vec[1]); 
+            if (0 == (counter %= 100))fprintf(fd,"%.8f %.8f %.8f %.8f\n",w_vec[0],hypot(Kh.pl,Kh.pr)/w_vec[0],Kh.pr,w_vec[1]); 
             ++counter;
         }
         else {
-            printf("%f Error\n",n); fflush(stdout);
+            printf("%f Error\n",Kpl); fflush(stdout);
             return 0;
         }
     }

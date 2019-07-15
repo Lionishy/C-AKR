@@ -5,8 +5,11 @@ C_FLAGS = -std=c11 -O3
 cavity-test:
 	gcc $(MAIN_DIR)/cavity_test.c $(SRC_FILES) -I ./inc -o ./bin/cavtest.exe $(C_FLAGS)
 
-obl-mapper:
-	gcc $(MAIN_DIR)/oblique.mapper.c $(SRC_FILES) -I ./inc -o ./bin/obl-mapper.exe $(C_FLAGS)
+kpl-mapper:
+	gcc $(MAIN_DIR)/kpl.mapper.c $(SRC_FILES) -I ./inc -o ./bin/kpl-mapper.exe $(C_FLAGS)
+
+kpr-mapper:
+	gcc $(MAIN_DIR)/kpr.mapper.c $(SRC_FILES) -I ./inc -o ./bin/kpr-mapper.exe $(C_FLAGS)
 
 new-mapper:
 	gcc $(MAIN_DIR)/new.mapper.main.c $(SRC_FILES) -I ./inc -o ./bin/new-mapper.exe $(C_FLAGS)
